@@ -26,4 +26,8 @@ const forgetPassword = Joi.object({
     })
 })
 
-module.exports={signupSchema, loginSchema, forgetPassword};
+const resetPasswordSchema = Joi.object({
+    newPassword: Joi.string().required().min(8).pattern(new RegExp('^(?=.*[a-zA-Z])(?=.*[0-9])')) //password should have a atleast one upper or lower case and one digiit
+})
+
+module.exports={signupSchema, loginSchema, forgetPassword,resetPasswordSchema};

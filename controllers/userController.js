@@ -6,6 +6,17 @@ const dotenv = require('dotenv')
 const {generateResetToken} = require('../utils/resetTokenGenerator')
 dotenv.config()
 
+
+const getAllUsers = async (req, res) => {
+    try {
+      const users = await User.find();
+      res.json(users);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
+
 const signup = async function (req, res, next){
     try{
        const {username, email, password} = req.body;
@@ -25,30 +36,29 @@ const signup = async function (req, res, next){
         return res.status(400).json({error:"username already exits"})
        }
 
-       const hashedPassword = await bcyrpt.hash(password, 10);
+       const hashedPassword = await bcrypt.hash(password, 10);
 
        const user = new User({username, email, password:hashedPassword});
+       user.save();
        return res.status(201).json({
         message: "user successfully created",
         preview:user
        })
-       next()
     }
     catch(err){
-        comsole.log(err);
+        console.log(err);
         return res.status(500).json({
             error:"Internal Server Error"
         })
 
     }
-
 }
 
 const Login = async function(req, res, next){
     try{
         const {identifier, password} = req.body;
 
-        const {error} = Validator.Login.validate(req.body);
+        const {error} = Validator.loginSchema.validate(req.body);
         if(error){
             return res.status(401).json({
                 error:error.details[0].message
@@ -69,7 +79,6 @@ const Login = async function(req, res, next){
         
     }
     const token = jwt.sign({userId:user._id}, process.env.secret_key,{expiresIn: 60*60} );
-
     return res.json({token})
 
     }
@@ -153,15 +162,11 @@ const resetPassword = async (req, res)=>{
    }
 }
 
-
-
-
- 
-
 module.exports = {
     signup,
     Login,
     forgetPassword,
     resetPassword,
-    protectedRoute
+    protectedRoute,
+    getAllUsers
   };

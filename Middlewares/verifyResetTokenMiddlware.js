@@ -26,4 +26,4 @@ const verifyResetToken = async function(req, res, next){
     }
 }
 
-module.exports = verifyResetToken;
+module.exports ={verifyResetToken};

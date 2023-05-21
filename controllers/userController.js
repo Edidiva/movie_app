@@ -71,10 +71,10 @@ const Login = async function(req, res, next){
         })
     }
 
-    const PasswordMatch = await bcrypt.compare(password, user.password)
+    const PasswordMatch = await bcrypt.compare(password, user.password);
     if(!PasswordMatch){
         return res.status(401).json({
-            error: "username/email/password is not correct"
+            error: "password is not correct"
         })
         
     }
